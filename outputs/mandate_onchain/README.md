@@ -56,7 +56,7 @@ Filled in after deployment. Explorer: https://testnet.monadvision.com
 
 | Contract | Address |
 |---|---|
-| Platform | _pending_ |
+| Platform | [0xB09569b01b65a13A91728cdB16358FbCEF131C46](https://testnet.monadvision.com/address/0xB09569b01b65a13A91728cdB16358FbCEF131C46) |
 | ExposureOracle | _pending_ |
 | MockExchange | _pending_ |
 | FundFactory | _pending_ |
