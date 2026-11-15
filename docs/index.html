@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mandate · rule-bound theme funds on Monad</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <h1>Mandate</h1>
+      <p class="tag">Funds whose rules are enforced on-chain, using what stocks actually are, not what they're labeled.</p>
+    </div>
+    <div class="wallet">
+      <span id="netBadge" class="badge">Monad Testnet</span>
+      <span id="account" class="mono muted">Not connected</span>
+      <span id="balances" class="muted"></span>
+      <button id="connectBtn">Connect MetaMask</button>
+      <button id="faucetBtn" class="secondary" disabled>Get 10,000 test dollars</button>
+    </div>
+  </header>
+
+  <div class="notice">Testnet demo. Stocks are simulated tokens priced from real market data; scores come from 10-K filings. In production this plugs into tokenized stocks.</div>
+
+  <main>
+    <!-- Setup: only shown until a platform exists -->
+    <section id="setupSection" class="card hidden">
+      <h2>1 · One-time setup</h2>
+      <p>Deploys the Exposure Oracle, the simulated stock market and the fund factory in a single transaction. Your wallet becomes the oracle's data poster. About 1.1 MON.</p>
+      <button id="deployBtn" disabled>Deploy platform</button>
+      <div class="row">
+        <input id="platformInput" class="mono" placeholder="…or paste an existing platform address 0x…" />
+        <button id="usePlatformBtn" class="secondary">Use this address</button>
+      </div>
+    </section>
+
+    <section id="platformSection" class="hidden">
+      <div class="grid2">
+        <!-- Oracle -->
+        <section class="card">
+          <h2>Exposure Oracle</h2>
+          <p class="muted small">Score = share of revenue or earnings tied to the theme (latest 10-K or quarter). Tier is computed on-chain: High ≥ 40%, Medium ≥ 15%, Low &gt; 0.</p>
+          <table id="oracleTable">
+            <thead><tr><th>Stock</th><th>Price</th><th>AI</th><th>Oil</th></tr></thead>
+            <tbody></tbody>
+          </table>
+          <details id="oracleAdmin">
+            <summary>Post data (oracle owner)</summary>
+            <p class="small muted">Edit prices and scores, then post them in one transaction.</p>
+            <table id="oracleEdit">
+              <thead><tr><th>Stock</th><th>Price $</th><th>AI %</th><th>Oil %</th></tr></thead>
+              <tbody></tbody>
+            </table>
+            <div class="row">
+              <input id="fmpKey" type="password" placeholder="FMP API key (optional, not saved)" autocomplete="off" />
+              <button id="fmpBtn" class="secondary">Fetch latest prices</button>
+            </div>
+            <button id="postBtn">Post to oracle</button>
+            <h3>Simulate a new filing</h3>
+            <p class="small muted">Change one score, as if a company's business mix shifted. Used to demo Enforce.</p>
+            <div class="row">
+              <select id="driftStock"></select>
+              <select id="driftTheme"><option>AI</option><option selected>Oil</option></select>
+              <input id="driftScore" type="number" min="0" max="100" step="0.1" value="45" />
+              <span>%</span>
+              <button id="driftBtn" class="secondary">Post new score</button>
+            </div>
+          </details>
+        </section>
+
+        <!-- Launch -->
+        <section class="card">
+          <h2>Launch a fund</h2>
+          <div class="row">
+            <label>Name <input id="fundName" value="Want AI, Avoid Oil" /></label>
+            <label>Ticker <input id="fundSymbol" value="AIXO" maxlength="8" /></label>
+          </div>
+          <h3>Basket</h3>
+          <div id="launchBasket"></div>
+          <div class="row small"><button id="launchAddRow" class="ghost">+ add stock</button><span id="launchSum" class="muted"></span></div>
+          <h3>Rules <span class="muted small">(fixed forever once launched)</span></h3>
+          <div class="rules">
+            <label>AI exposure at least <input id="ruleAiMin" type="number" value="60" min="0" max="100" />%</label>
+            <label>Oil exposure at most <input id="ruleOilMax" type="number" value="5" min="0" max="100" />%</label>
+            <label>No single stock with oil tier above
+              <select id="ruleOilTier"><option value="0">None</option><option value="1" selected>Low</option><option value="2">Medium</option><option value="3">High</option></select>
+            </label>
+          </div>
+          <div class="row">
+            <button id="previewLaunchBtn" class="secondary" disabled>Check rules (free)</button>
+            <button id="launchBtn" disabled>Launch fund</button>
+          </div>
+          <div id="launchResult" class="result"></div>
+        </section>
+      </div>
+
+      <!-- Funds -->
+      <section class="card">
+        <h2>Funds</h2>
+        <div id="fundList" class="fundlist"><span class="muted">No funds yet.</span></div>
+      </section>
+
+      <section id="fundSection" class="card hidden">
+        <div class="fundhead">
+          <div>
+            <h2 id="fundTitle"></h2>
+            <a id="fundLink" class="mono small" target="_blank" rel="noopener"></a>
+          </div>
+          <div class="receipts" id="receipts"></div>
+        </div>
+
+        <div class="stats">
+          <div><span class="label">Price per token</span><span id="sPrice" class="big"></span></div>
+          <div><span class="label">Fund value (NAV)</span><span id="sNav" class="big"></span></div>
+          <div><span class="label">Tokens outstanding</span><span id="sSupply" class="big"></span></div>
+          <div><span class="label">You hold</span><span id="sMine" class="big"></span></div>
+        </div>
+
+        <div class="grid2">
+          <div>
+            <h3>Holdings</h3>
+            <table id="holdTable"><thead><tr><th>Stock</th><th>Target</th><th>Tokens</th><th>Value</th></tr></thead><tbody></tbody></table>
+            <h3>Rules vs. now</h3>
+            <div id="ruleStatus"></div>
+          </div>
+          <div>
+            <h3>Invest</h3>
+            <div class="row">
+              <input id="depositAmt" type="number" value="1000" min="0" /> <span>test $</span>
+              <button id="depositBtn" disabled>Deposit</button>
+            </div>
+            <div class="row">
+              <input id="redeemAmt" type="number" placeholder="tokens" min="0" />
+              <button id="redeemMaxBtn" class="ghost">max</button>
+              <button id="redeemBtn" class="secondary" disabled>Cash out</button>
+            </div>
+
+            <h3>Change the basket <span class="muted small">(creator only)</span></h3>
+            <div id="proposeBasket"></div>
+            <div class="row small"><button id="proposeAddRow" class="ghost">+ add stock</button><span id="proposeSum" class="muted"></span></div>
+            <div class="row">
+              <button id="tryXomBtn" class="secondary">Try adding XOM</button>
+              <button id="checkProposeBtn" class="secondary">Check rules (free)</button>
+              <button id="proposeBtn" disabled>Submit change</button>
+            </div>
+            <div id="proposeResult" class="result"></div>
+
+            <h3>Enforce <span class="muted small">(anyone)</span></h3>
+            <p class="small muted">If a holding has drifted past a rule, this sells it, reinvests in the rest, and pays you 0.5% of the value sold.</p>
+            <button id="enforceBtn" disabled>Enforce rules</button>
+            <div id="enforceResult" class="result"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Activity</h2>
+        <ul id="log" class="log"></ul>
+        <p class="small muted" id="addresses"></p>
+      </section>
+    </section>
+  </main>
+
+  <script src="ethers.umd.min.js"></script>
+  <script src="config.js"></script>
+  <script src="contracts.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
