@@ -1,0 +1,15 @@
+ticker,theme,score_pct,tier,numerator_usd_bn,denominator_usd_bn,metric,period,source
+NVDA,AI,89.7,High,193.700,215.938,"Data Center revenue / total revenue","FY2026 (ended Jan 25 2026)",https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Fourth-Quarter-and-Fiscal-2026
+NVDA,OIL,0.0,None,0,,"No revenue from this theme in filing","",
+AMD,AI,47.9,High,16.600,34.639,"Data Center segment revenue / total revenue","FY2025",https://ir.amd.com/news-events/press-releases/detail/1276/amd-reports-fourth-quarter-and-full-year-2025-financial-results
+AMD,OIL,0.0,None,0,,"No revenue from this theme in filing","",
+MSFT,AI,41.5,High,137.800,331.800,"Intelligent Cloud segment revenue / total revenue","FY2026 (ended Jun 30 2026)",https://beancount.io/blog/2026/07/29/microsoft-fy2026-earnings-analysis
+MSFT,OIL,0.0,None,0,,"No revenue from this theme in filing","",
+AVGO,AI,31.3,Medium,20.000,63.887,"AI semiconductor revenue / total revenue","FY2025 (ended Nov 2 2025)",https://vectorshift.ai/research/companies/broadcom/earnings/2025-q4
+AVGO,OIL,0.0,None,0,,"No revenue from this theme in filing","",
+GOOGL,AI,15.5,Medium,17.664,113.828,"Google Cloud revenue / total revenue","Q4 2025",https://equibles.com/stocks/googl/documents/1fd5031b-440a-40fc-9427-a5c573d2e9a4
+GOOGL,OIL,0.0,None,0,,"No revenue from this theme in filing","",
+XOM,AI,0.0,None,0,,"No revenue from this theme in filing","",
+XOM,OIL,88.6,High,28.800,32.500,"(Upstream + Energy Products earnings) / total segment earnings","FY2025",https://www.offshore-technology.com/?p=296765
+CVX,AI,0.0,None,0,,"No revenue from this theme in filing","",
+CVX,OIL,100.0,High,3.853,3.853,"(Upstream + Downstream earnings) / total segment earnings","Q4 2025",https://www.offshore-technology.com/news/chevron-q4-2025-net-income-drops/

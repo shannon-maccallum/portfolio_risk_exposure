@@ -1,0 +1,8 @@
+{
+  "name": "mandate-onchain",
+  "private": true,
+  "description": "Solidity dependencies for the Mandate contracts",
+  "dependencies": {
+    "@openzeppelin/contracts": "5.1.0"
+  }
+}
