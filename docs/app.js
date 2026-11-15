@@ -152,6 +152,7 @@
     log(`${label}: sent… ${txLink(tx.hash)}`);
     const receipt = await tx.wait();
     log(`${label}: confirmed in block ${receipt.blockNumber} ${txLink(tx.hash)}`, "ok");
+    await new Promise((r) => setTimeout(r, 2500)); // give Monad's read servers a moment to catch up
     return receipt;
   }
 
