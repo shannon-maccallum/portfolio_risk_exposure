@@ -205,7 +205,13 @@
     S.exchange = new ethers.Contract(x, C.MockExchange.abi, r);
     S.factory = new ethers.Contract(f, C.FundFactory.abi, r);
     S.usd = new ethers.Contract(await S.exchange.usd(), C.MockToken.abi, r);
-    const addrs = await S.exchange.allStocks();
+    // Monad nodes can lag a moment behind a just-confirmed block, so retry until the stocks appear.
+    let addrs = [];
+    for (let i = 0; i < 8 && addrs.length === 0; i++) {
+      addrs = await S.exchange.allStocks().catch(() => []);
+      if (addrs.length === 0) await new Promise((r) => setTimeout(r, 1500));
+    }
+    if (addrs.length === 0) throw new Error("Platform found but its stocks are not readable yet. Refresh the page in a few seconds.");
     const syms = await Promise.all(addrs.map((a) => new ethers.Contract(a, C.MockToken.abi, r).symbol()));
     S.stocks = {};
     S.symbolOf = {};
@@ -245,7 +251,7 @@
       .join("");
     // Pre-fill the editor with on-chain values, or 10-K defaults before the first post.
     const eb = $("oracleEdit").querySelector("tbody");
-    if (!eb.dataset.filled) {
+    if (!eb.dataset.filled && rows.length) {
       eb.innerHTML = rows
         .map(([sym, d]) => {
           const posted = d.price > 0n;
